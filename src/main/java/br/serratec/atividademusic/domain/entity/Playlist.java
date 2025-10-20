@@ -1,5 +1,6 @@
 package br.serratec.atividademusic.domain.entity;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -20,6 +21,12 @@ public class Playlist {
 	@Column(name = "nome", length = 100, nullable = false)
 	private String nome;
 
+	@Schema(description = "Descrição curta da playlist.")
+	@NotBlank(message = "A descrição da playlist é obrigatória")
+	@Size(max = 255, message = "A descrição não pode exceder 255 caracteres")
+	@Column(name = "descricao", length = 255, nullable = false)
+	private String descricao;
+
 	@NotNull(message = "A playlist deve pertencer a um usuário")
 	@ManyToOne
 	@JoinColumn(name = "usuario_id", nullable = false)
@@ -29,18 +36,9 @@ public class Playlist {
 	@JoinTable(name = "playlist_musica", joinColumns = @JoinColumn(name = "playlist_id"), inverseJoinColumns = @JoinColumn(name = "musica_id"))
 	private Set<Musica> musicas;
 
-	
 	public Playlist() {
 	}
 
-	public Playlist(Long id, String nome, Usuario usuario, Set<Musica> musicas) {
-		this.id = id;
-		this.nome = nome;
-		this.usuario = usuario;
-		this.musicas = musicas;
-	}
-
-	// Getters e Setters
 	public Long getId() {
 		return id;
 	}
@@ -55,6 +53,14 @@ public class Playlist {
 
 	public void setNome(String nome) {
 		this.nome = nome;
+	}
+
+	public String getDescricao() {
+		return descricao;
+	}
+
+	public void setDescricao(String descricao) {
+		this.descricao = descricao;
 	}
 
 	public Usuario getUsuario() {

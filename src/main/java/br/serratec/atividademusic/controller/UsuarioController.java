@@ -1,6 +1,9 @@
 package br.serratec.atividademusic.controller;
 
+import br.serratec.atividademusic.domain.dto.request.UsuarioRequestDTO;
+import br.serratec.atividademusic.domain.entity.Perfil;
 import br.serratec.atividademusic.domain.entity.Usuario;
+import br.serratec.atividademusic.exception.NotFoundException;
 import br.serratec.atividademusic.repository.UsuarioRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -11,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/usuarios")
@@ -24,61 +26,66 @@ public class UsuarioController {
 	@GetMapping
 	@Operation(summary = "Lista todos os usuários", description = "Retorna uma lista de todos os usuários cadastrados.")
 	public ResponseEntity<List<Usuario>> listar() {
-	
-		List<Usuario> usuarios = usuarioRepository.findAll();
-		return ResponseEntity.ok(usuarios);
+		return ResponseEntity.ok(usuarioRepository.findAll());
 	}
 
 	@GetMapping("/{id}")
 	@Operation(summary = "Buscar usuário por ID", description = "Retorna um usuário específico baseado no ID.")
 	public ResponseEntity<Usuario> buscar(@PathVariable Long id) {
 	
-		Optional<Usuario> usuario = usuarioRepository.findById(id);
+		Usuario usuario = usuarioRepository.findById(id)
+				.orElseThrow(() -> new NotFoundException("Usuário não encontrado com ID: " + id));
 
-		if (usuario.isPresent()) {
-			return ResponseEntity.ok(usuario.get());
-		}
-	
-		return ResponseEntity.notFound().build();
+		return ResponseEntity.ok(usuario);
 	}
 
 	@PostMapping
-	@Operation(summary = "Criar novo usuário", description = "Cria um novo usuário e o salva no banco de dados.")
-	public ResponseEntity<Usuario> criar(@RequestBody @Valid Usuario usuario) {
+	@Operation(summary = "Criar novo usuário (Com Perfil Aninhado)", description = "Cria um novo usuário. O Body deve conter o objeto 'perfil' aninhado.")
+	public ResponseEntity<Usuario> criar(@RequestBody @Valid UsuarioRequestDTO dto) {
+
+
+		Perfil perfil = new Perfil();
+		perfil.setTelefone(dto.getPerfil().getTelefone());
+		perfil.setDataNascimento(dto.getPerfil().getDataNascimento());
+
+	
+		Usuario usuario = new Usuario();
+		usuario.setNome(dto.getNome());
+		usuario.setEmail(dto.getEmail());
+		usuario.setPerfil(perfil);
+
 		
+		perfil.setUsuario(usuario);
+
+
 		Usuario novoUsuario = usuarioRepository.save(usuario);
-		
+
 		return ResponseEntity.status(HttpStatus.CREATED).body(novoUsuario);
 	}
 
 	@PutMapping("/{id}")
 	@Operation(summary = "Atualizar usuário", description = "Atualiza os dados de um usuário existente baseado no ID.")
 	public ResponseEntity<Usuario> atualizar(@PathVariable Long id, @RequestBody @Valid Usuario usuarioAtualizado) {
-		// 1. Busca o usuário existente
-		Optional<Usuario> usuarioExistente = usuarioRepository.findById(id);
+		
+		Usuario usuarioExistente = usuarioRepository.findById(id)
+				.orElseThrow(() -> new NotFoundException("Usuário para atualização não encontrado com ID: " + id));
 
-		if (usuarioExistente.isPresent()) {
-			// 2. Define o ID no objeto atualizado para garantir que o JPA faça o UPDATE e
-			// não o INSERT
-			usuarioAtualizado.setId(id);
-			// 3. Salva o objeto atualizado
-			Usuario usuarioSalvo = usuarioRepository.save(usuarioAtualizado);
-			return ResponseEntity.ok(usuarioSalvo);
-		}
-		// Retorna 404 Not Found se o ID não existir
-		return ResponseEntity.notFound().build();
+		usuarioExistente.setNome(usuarioAtualizado.getNome());
+		usuarioExistente.setEmail(usuarioAtualizado.getEmail());
+	
+		Usuario usuarioSalvo = usuarioRepository.save(usuarioExistente);
+		return ResponseEntity.ok(usuarioSalvo);
 	}
 
 	@DeleteMapping("/{id}")
 	@Operation(summary = "Deletar usuário", description = "Exclui um usuário e todos os seus dados (Playlists, etc.).")
 	public ResponseEntity<Void> deletar(@PathVariable Long id) {
-		
-		if (usuarioRepository.existsById(id)) {
-			usuarioRepository.deleteById(id);
-			
-			return ResponseEntity.noContent().build();
+
+		if (!usuarioRepository.existsById(id)) {
+			throw new NotFoundException("Usuário para exclusão não encontrado com ID: " + id);
 		}
-		
-		return ResponseEntity.notFound().build();
+
+		usuarioRepository.deleteById(id);
+		return ResponseEntity.noContent().build();
 	}
 }

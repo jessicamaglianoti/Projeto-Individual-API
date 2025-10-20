@@ -1,59 +1,66 @@
 package br.serratec.atividademusic.domain.entity;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "artista")
 public class Artista {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @NotBlank(message = "O nome artístico é obrigatório")
-    @Size(max = 100, message = "O nome não pode exceder 100 caracteres")
-    @Column(name = "nome_artistico", length = 100, nullable = false)
-    private String nomeArtistico;
+	@NotBlank(message = "O nome artístico é obrigatório")
+	@Size(max = 100, message = "O nome não pode exceder 100 caracteres")
+	@Column(name = "nome_artistico", length = 100, nullable = false)
+	private String nomeArtistico;
 
-   
-    @OneToMany(mappedBy = "artista", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Musica> musicas;
+	@Schema(description = "Nacionalidade do artista.")
+	@NotBlank(message = "A nacionalidade é obrigatória")
+	@Size(max = 50, message = "A nacionalidade não pode exceder 50 caracteres")
+	@Column(name = "nacionalidade", length = 50, nullable = false)
+	private String nacionalidade;
 
-   
-    public Artista() {}
+	@ManyToMany(mappedBy = "artistas")
+	private Set<Musica> musicas;
 
-    public Artista(Long id, String nomeArtistico, List<Musica> musicas) {
-        this.id = id;
-        this.nomeArtistico = nomeArtistico;
-        this.musicas = musicas;
-    }
+	public Artista() {
+	}
 
-    
-    public Long getId() {
-        return id;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public String getNomeArtistico() {
-        return nomeArtistico;
-    }
+	public String getNomeArtistico() {
+		return nomeArtistico;
+	}
 
-    public void setNomeArtistico(String nomeArtistico) {
-        this.nomeArtistico = nomeArtistico;
-    }
+	public void setNomeArtistico(String nomeArtistico) {
+		this.nomeArtistico = nomeArtistico;
+	}
 
-    public List<Musica> getMusicas() {
-        return musicas;
-    }
+	public String getNacionalidade() {
+		return nacionalidade;
+	}
 
-    public void setMusicas(List<Musica> musicas) {
-        this.musicas = musicas;
-    }
+	public void setNacionalidade(String nacionalidade) {
+		this.nacionalidade = nacionalidade;
+	}
+
+	public Set<Musica> getMusicas() {
+		return musicas;
+	}
+
+	public void setMusicas(Set<Musica> musicas) {
+		this.musicas = musicas;
+	}
 }
