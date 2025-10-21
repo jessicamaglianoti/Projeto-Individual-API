@@ -32,7 +32,7 @@ public class UsuarioController {
 	@GetMapping("/{id}")
 	@Operation(summary = "Buscar usuário por ID", description = "Retorna um usuário específico baseado no ID.")
 	public ResponseEntity<Usuario> buscar(@PathVariable Long id) {
-	
+
 		Usuario usuario = usuarioRepository.findById(id)
 				.orElseThrow(() -> new NotFoundException("Usuário não encontrado com ID: " + id));
 
@@ -43,20 +43,16 @@ public class UsuarioController {
 	@Operation(summary = "Criar novo usuário (Com Perfil Aninhado)", description = "Cria um novo usuário. O Body deve conter o objeto 'perfil' aninhado.")
 	public ResponseEntity<Usuario> criar(@RequestBody @Valid UsuarioRequestDTO dto) {
 
-
 		Perfil perfil = new Perfil();
 		perfil.setTelefone(dto.getPerfil().getTelefone());
 		perfil.setDataNascimento(dto.getPerfil().getDataNascimento());
 
-	
 		Usuario usuario = new Usuario();
 		usuario.setNome(dto.getNome());
 		usuario.setEmail(dto.getEmail());
 		usuario.setPerfil(perfil);
 
-		
 		perfil.setUsuario(usuario);
-
 
 		Usuario novoUsuario = usuarioRepository.save(usuario);
 
@@ -66,13 +62,13 @@ public class UsuarioController {
 	@PutMapping("/{id}")
 	@Operation(summary = "Atualizar usuário", description = "Atualiza os dados de um usuário existente baseado no ID.")
 	public ResponseEntity<Usuario> atualizar(@PathVariable Long id, @RequestBody @Valid Usuario usuarioAtualizado) {
-		
+
 		Usuario usuarioExistente = usuarioRepository.findById(id)
 				.orElseThrow(() -> new NotFoundException("Usuário para atualização não encontrado com ID: " + id));
 
 		usuarioExistente.setNome(usuarioAtualizado.getNome());
 		usuarioExistente.setEmail(usuarioAtualizado.getEmail());
-	
+
 		Usuario usuarioSalvo = usuarioRepository.save(usuarioExistente);
 		return ResponseEntity.ok(usuarioSalvo);
 	}

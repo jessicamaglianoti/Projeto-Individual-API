@@ -36,7 +36,6 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 		body.put("status", HttpStatus.BAD_REQUEST.value());
 		body.put("error", "Erro de Validação");
 
-		// Captura todos os erros de campo
 		List<String> errors = ex.getBindingResult().getFieldErrors().stream()
 				.map(err -> err.getField() + ": " + err.getDefaultMessage()).collect(Collectors.toList());
 

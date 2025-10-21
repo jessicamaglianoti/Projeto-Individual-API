@@ -22,7 +22,6 @@ public class UsuarioRequestDTO {
 	@Valid
 	private PerfilRequestDTO perfil;
 
-
 	public UsuarioRequestDTO() {
 	}
 

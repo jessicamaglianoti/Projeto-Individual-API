@@ -31,7 +31,7 @@ public class MusicaController {
 	@GetMapping("/{id}")
 	@Operation(summary = "Buscar música por ID", description = "Retorna uma música específica baseado no ID.")
 	public ResponseEntity<Musica> buscar(@PathVariable Long id) {
-		
+
 		Musica musica = musicaRepository.findById(id)
 				.orElseThrow(() -> new NotFoundException("Música não encontrada com ID: " + id));
 
@@ -41,7 +41,7 @@ public class MusicaController {
 	@PostMapping
 	@Operation(summary = "Criar nova música", description = "Cria uma nova música. O body deve incluir a lista de IDs de 'artistas'.")
 	public ResponseEntity<Musica> criar(@RequestBody @Valid Musica musica) {
-		
+
 		musica.setId(null);
 		Musica novaMusica = musicaRepository.save(musica);
 		return ResponseEntity.status(HttpStatus.CREATED).body(novaMusica);
@@ -50,16 +50,14 @@ public class MusicaController {
 	@PutMapping("/{id}")
 	@Operation(summary = "Atualizar música", description = "Atualiza os dados de uma música existente baseado no ID.")
 	public ResponseEntity<Musica> atualizar(@PathVariable Long id, @RequestBody @Valid Musica musicaAtualizada) {
-		
+
 		Musica musicaExistente = musicaRepository.findById(id)
 				.orElseThrow(() -> new NotFoundException("Música para atualização não encontrada com ID: " + id));
 
-		// 2. Transfere dados
 		musicaExistente.setTitulo(musicaAtualizada.getTitulo());
-		musicaExistente.setMinutos(musicaAtualizada.getMinutos()); 
-		musicaExistente.setGenero(musicaAtualizada.getGenero()); 
+		musicaExistente.setMinutos(musicaAtualizada.getMinutos());
+		musicaExistente.setGenero(musicaAtualizada.getGenero());
 
-	
 		Musica musicaSalva = musicaRepository.save(musicaExistente);
 		return ResponseEntity.ok(musicaSalva);
 	}

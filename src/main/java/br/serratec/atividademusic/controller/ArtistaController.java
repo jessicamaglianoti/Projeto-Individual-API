@@ -31,7 +31,7 @@ public class ArtistaController {
 	@GetMapping("/{id}")
 	@Operation(summary = "Buscar artista por ID", description = "Retorna um artista específico baseado no ID.")
 	public ResponseEntity<Artista> buscar(@PathVariable Long id) {
-		
+
 		Artista artista = artistaRepository.findById(id)
 				.orElseThrow(() -> new NotFoundException("Artista não encontrado com ID: " + id));
 
@@ -41,23 +41,22 @@ public class ArtistaController {
 	@PostMapping
 	@Operation(summary = "Criar novo artista", description = "Cria um novo artista e o salva no banco de dados.")
 	public ResponseEntity<Artista> criar(@RequestBody @Valid Artista artista) {
-	
+
 		artista.setId(null);
 		Artista novoArtista = artistaRepository.save(artista);
-		
+
 		return ResponseEntity.status(HttpStatus.CREATED).body(novoArtista);
 	}
 
 	@PutMapping("/{id}")
 	@Operation(summary = "Atualizar artista", description = "Atualiza os dados de um artista existente baseado no ID.")
 	public ResponseEntity<Artista> atualizar(@PathVariable Long id, @RequestBody @Valid Artista artistaAtualizado) {
-		
+
 		Artista artistaExistente = artistaRepository.findById(id)
 				.orElseThrow(() -> new NotFoundException("Artista para atualização não encontrado com ID: " + id));
 
-		
 		artistaExistente.setNomeArtistico(artistaAtualizado.getNomeArtistico());
-		
+
 		Artista artistaSalvo = artistaRepository.save(artistaExistente);
 		return ResponseEntity.ok(artistaSalvo);
 	}
