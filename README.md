@@ -13,10 +13,15 @@ A API é responsável por gerenciar dados de Usuários, Perfis, Artistas, Músic
 
 ### 🛠️ Requisitos Técnicos Principais
 **Arquitetura:** O projeto deve ser organizado em pacotes (`controller`, `repository`, `domain/entity`, `exception`).
+
 **Persistência:** Uso de JPA e Hibernate, com conexão ao PostgreSQL.
+
 **Relacionamentos:** Implementação correta dos relacionamentos One-to-One, One-to-Many e Many-to-Many.
+
 **Validação:** Uso de Bean Validation (`@Valid`, `@NotBlank`, etc.) nos dados de entrada.
+
 **Tratamento de Erros:** Utilização de `@ControllerAdvice` para tratamento centralizado de exceções.
+
 **Documentação:** Documentação automática com Swagger/Springdoc OpenAPI, incluindo descrições customizadas.
 
 ---
